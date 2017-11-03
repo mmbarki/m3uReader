@@ -1,10 +1,16 @@
 package com.mbarki.m3uReader.ui;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mbarki.m3uReader.ui.component.Header;
 import com.mbarki.m3uReader.ui.component.M3uEditor;
+import com.mbarki.m3uReader.ui.component.M3uFileUplaoder;
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -16,13 +22,17 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
 
 @Theme("valo")
 @SpringUI
-public class M3uReaderUi extends UI implements ClickListener {
+public class M3uReaderUi extends UI implements ClickListener, SucceededListener {
 
 	private static final long serialVersionUID = 4134672115269419785L;
 
@@ -32,6 +42,7 @@ public class M3uReaderUi extends UI implements ClickListener {
 	Panel body;
 
 	M3uEditor m3uEditor;
+	M3uFileUplaoder m3uFileUplaoder;
 
 	VerticalLayout rootContent;
 	Layout bodyContent;
@@ -79,6 +90,11 @@ public class M3uReaderUi extends UI implements ClickListener {
 		m3uEditor = new M3uEditor("edit here ...");
 		m3uEditor.setActionLister(this);
 		bodyContent.addComponent(m3uEditor);
+
+		// file uploader
+		m3uFileUplaoder = new M3uFileUplaoder("Upload file here");
+		m3uFileUplaoder.setSucceededListener(this);
+		bodyContent.addComponent(m3uFileUplaoder);
 
 		// account infos:
 		// accountInfosPanel = new AcountInfoPanel();
@@ -212,5 +228,23 @@ public class M3uReaderUi extends UI implements ClickListener {
 	// return DocumentType.getEnum(buttonId.substring(buttonId.indexOf("_") +
 	// 1));
 	// }
+
+	@Override
+	public void uploadSucceeded(SucceededEvent event) {
+		byte[] buffer = this.m3uFileUplaoder.getOutputStream().toByteArray();
+		//				boolean isPlainText = MimeTypes.PLAIN_TEXT.equals(new MimeTypes().getMimeType(buffer).getName());
+		//		if (isPlainText) {
+
+		String value = "";
+
+		try {
+			value = IOUtils.toString(new ByteArrayInputStream(buffer), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			Notification.show("Failed", Type.TRAY_NOTIFICATION);
+			return;
+		}
+		this.m3uEditor.setValue(value);
+		Notification.show("Success", Type.TRAY_NOTIFICATION);
+	}
 
 }

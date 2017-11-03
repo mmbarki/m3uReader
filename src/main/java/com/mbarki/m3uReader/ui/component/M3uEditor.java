@@ -1,37 +1,50 @@
 package com.mbarki.m3uReader.ui.component;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 
-public class M3uEditor extends HorizontalLayout {
+public class M3uEditor extends Panel {
 
 	private static final long serialVersionUID = -4145175088751301733L;
 
+	HorizontalLayout content;
+
 	TextArea editorTextArea;
 	Button processButton;
+
+	@Autowired
+	UiUtils uiUtils;
 
 	public M3uEditor(String editorCaption) {
 
 		editorTextArea = new TextArea();
 		editorTextArea.setPlaceholder(editorCaption);
+		editorTextArea.setSizeFull();
+		editorTextArea.focus();
+
 		processButton = new Button("Process");
 		processButton.setId("PROCESS");
 
-		addComponent(editorTextArea);
-		addComponent(processButton);
-		this.setComponentAlignment(processButton, Alignment.BOTTOM_RIGHT);
+		content = (HorizontalLayout) uiUtils.createHBloc(editorTextArea, processButton);
 
-		editorTextArea.setSizeFull();
-		setExpandRatio(editorTextArea, 2);
-		setSizeFull();
-		editorTextArea.focus();
+		content.setComponentAlignment(processButton, Alignment.BOTTOM_RIGHT);
+		content.setExpandRatio(editorTextArea, 2);
+		content.setSizeFull();
+
 	}
 
 	public String getValue() {
 		return editorTextArea.getValue();
+	}
+
+	public void setValue(String value) {
+		editorTextArea.setValue(value);
 	}
 
 	public void setActionLister(ClickListener clickListener) {

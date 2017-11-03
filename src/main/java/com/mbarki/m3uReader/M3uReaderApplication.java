@@ -1,9 +1,12 @@
 package com.mbarki.m3uReader;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 
-@SpringBootApplication
+//@SpringBootApplication
+@EnableAutoConfiguration
+@ComponentScan
 public class M3uReaderApplication {
 
 	public static void main(String[] args) {
