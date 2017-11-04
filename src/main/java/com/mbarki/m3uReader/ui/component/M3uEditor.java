@@ -31,7 +31,7 @@ public class M3uEditor extends Panel {
 		processButton = new Button("Process");
 		processButton.setId("PROCESS");
 
-		content = (HorizontalLayout) uiUtils.createHBloc(editorTextArea, processButton);
+		content = (HorizontalLayout) this.createHBloc(editorTextArea, processButton);
 
 		content.setComponentAlignment(processButton, Alignment.BOTTOM_RIGHT);
 		content.setExpandRatio(editorTextArea, 2);
@@ -49,5 +49,18 @@ public class M3uEditor extends Panel {
 
 	public void setActionLister(ClickListener clickListener) {
 		processButton.addClickListener(clickListener);
+	}
+	
+	public AbstractOrderedLayout createHBloc(Component... components) {
+		HorizontalLayout content = new HorizontalLayout();
+		content.setMargin(false);
+		content.setSizeFull();
+
+		for (Component component : components) {
+			if (component != null) {
+				content.addComponent(component);
+			}
+		}
+		return content;
 	}
 }
