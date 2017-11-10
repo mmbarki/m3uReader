@@ -12,10 +12,12 @@ import com.mbarki.m3uReader.ui.component.Header;
 import com.mbarki.m3uReader.ui.component.M3uEditor;
 import com.mbarki.m3uReader.ui.component.M3uFileUplaoder;
 import com.vaadin.annotations.Theme;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
@@ -29,6 +31,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 
 @Theme("valo")
 @SpringUI
@@ -39,14 +42,17 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 	private static final Logger LOGGER = LoggerFactory.getLogger(M3uReaderUi.class);
 
 	Header header;
-	Panel body;
+	Panel bodyInput;
+	Panel bodyOutput;
 
 	M3uEditor m3uEditor;
 	M3uFileUplaoder m3uFileUplaoder;
 	TextArea resultTextArea;
+	Button processButton;
 
 	VerticalLayout rootContent;
-	Layout bodyContent;
+	Layout bodyInputContent;
+	Layout bodyOutputContent;
 
 	@Override
 	public void init(VaadinRequest request) {
@@ -58,48 +64,69 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 		createBody();
 
 		header.setWidth("100%");
-		body.setWidth("100%");
+		bodyInput.setWidth("100%");
+		bodyOutput.setWidth("100%");
 
 		rootContent.addComponent(header);
-		rootContent.addComponent(body);
-		rootContent.setExpandRatio(body, 1);
+		rootContent.addComponent(bodyInput);
+		rootContent.addComponent(processButton);
+		rootContent.addComponent(bodyOutput);
+
+		rootContent.setExpandRatio(bodyInput, 1);
 		rootContent.setComponentAlignment(header, Alignment.TOP_CENTER);
-		rootContent.setComponentAlignment(body, Alignment.TOP_CENTER);
+		rootContent.setComponentAlignment(bodyInput, Alignment.TOP_CENTER);
+		rootContent.setComponentAlignment(bodyOutput, Alignment.TOP_CENTER);
 		this.setContent(rootContent);
 
 		LOGGER.info("M3u Reader - ui successfully initialized");
 	}
 
 	private void createBody() {
-		body = new Panel();
-		body.setSizeFull();
+		bodyInput = new Panel();
+		bodyOutput = new Panel("Result ...");
+		bodyInput.setSizeFull();
+		bodyOutput.setSizeFull();
 
-		bodyContent = new VerticalLayout();
+		bodyInputContent = new VerticalLayout();
+		bodyOutputContent = new HorizontalLayout();
+		bodyOutputContent.setSizeFull();
 
 		// file uploader
 		m3uFileUplaoder = new M3uFileUplaoder("Upload file here");
 		m3uFileUplaoder.setSucceededListener(this);
-		bodyContent.addComponent(m3uFileUplaoder);
+		bodyInputContent.addComponent(m3uFileUplaoder);
 
 		// m3u editor
 		m3uEditor = new M3uEditor("edit here ...");
-		m3uEditor.setActionLister(this);
-		bodyContent.addComponent(m3uEditor);
+		//m3uEditor.setActionLister(this);
+		bodyInputContent.addComponent(m3uEditor);
+
+		// Process button
+		processButton = new Button("Click to process", VaadinIcons.COGS);
+		processButton.setId("PROCESS");
+		processButton.setSizeFull();
+		//		processButton.addStyleName(ValoTheme.BUTTON_TINY);
+		processButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
+		processButton.addStyleName(ValoTheme.BUTTON_TINY);
+		//		processButton.addStyleName(ValoTheme.LABEL_BOLD);
+
+		processButton.addClickListener(this);
 
 		// Result
 		resultTextArea = new TextArea();
+		resultTextArea.addStyleName(ValoTheme.TEXTAREA_BORDERLESS);
 		resultTextArea.setSizeFull();
 		//		resultTextArea.setEnabled(false);
-		Panel resultPannel = new Panel("Result ...");
-		resultPannel.setContent(resultTextArea);
-		bodyContent.addComponent(resultPannel);
+		bodyOutputContent.addComponent(resultTextArea);
 
-		body.setContent(bodyContent);
+		bodyInput.setContent(bodyInputContent);
+		bodyOutput.setContent(bodyOutputContent);
+		//		bodyOutput.setContent(bodyOutputContent);
 	}
 
 	private AbstractOrderedLayout createHBloc(Component... components) {
 		HorizontalLayout content = new HorizontalLayout();
-		content.setMargin(false);
+		content.setMargin(true);
 		content.setSizeFull();
 
 		for (Component component : components) {
@@ -113,9 +140,6 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 	@Override
 	public void uploadSucceeded(SucceededEvent event) {
 		byte[] buffer = this.m3uFileUplaoder.getOutputStream().toByteArray();
-		//				boolean isPlainText = MimeTypes.PLAIN_TEXT.equals(new MimeTypes().getMimeType(buffer).getName());
-		//		if (isPlainText) {
-
 		String value = "";
 
 		try {
@@ -137,6 +161,7 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 			process();
 			return;
 		}
+
 		//		if (event.getButton().getId().startsWith("OK_")) {
 		//			validateDocument(getDocumentType(event.getButton().getId()));
 		//			findAction();
