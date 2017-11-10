@@ -98,17 +98,14 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 
 		// m3u editor
 		m3uEditor = new M3uEditor("edit here ...");
-		//m3uEditor.setActionLister(this);
 		bodyInputContent.addComponent(m3uEditor);
 
 		// Process button
 		processButton = new Button("Click to process", VaadinIcons.COGS);
 		processButton.setId("PROCESS");
 		processButton.setSizeFull();
-		//		processButton.addStyleName(ValoTheme.BUTTON_TINY);
 		processButton.addStyleName(ValoTheme.BUTTON_FRIENDLY);
 		processButton.addStyleName(ValoTheme.BUTTON_TINY);
-		//		processButton.addStyleName(ValoTheme.LABEL_BOLD);
 
 		processButton.addClickListener(this);
 
@@ -116,12 +113,10 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 		resultTextArea = new TextArea();
 		resultTextArea.addStyleName(ValoTheme.TEXTAREA_BORDERLESS);
 		resultTextArea.setSizeFull();
-		//		resultTextArea.setEnabled(false);
 		bodyOutputContent.addComponent(resultTextArea);
 
 		bodyInput.setContent(bodyInputContent);
 		bodyOutput.setContent(bodyOutputContent);
-		//		bodyOutput.setContent(bodyOutputContent);
 	}
 
 	private AbstractOrderedLayout createHBloc(Component... components) {
