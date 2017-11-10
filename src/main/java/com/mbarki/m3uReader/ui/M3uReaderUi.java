@@ -19,12 +19,12 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
@@ -43,10 +43,10 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 
 	M3uEditor m3uEditor;
 	M3uFileUplaoder m3uFileUplaoder;
+	TextArea resultTextArea;
 
 	VerticalLayout rootContent;
 	Layout bodyContent;
-	GridLayout documentsContent;
 
 	@Override
 	public void init(VaadinRequest request) {
@@ -76,43 +76,23 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 
 		bodyContent = new VerticalLayout();
 
-		// les derniers comptes Créés:
-		// List<Component> lastAccounts = createLastAccounts();
-		// if (!lastAccounts.isEmpty()) {
-		// AbstractOrderedLayout blocLastAccount =
-		// createHBloc(lastAccounts.toArray(new
-		// Component[lastAccounts.size()]));
-		// blocLastAccount.setDefaultComponentAlignment(Alignment.BOTTOM_RIGHT);
-		// bodyContent.addComponent(blocLastAccount);
-		// }
+		// file uploader
+		m3uFileUplaoder = new M3uFileUplaoder("Upload file here");
+		m3uFileUplaoder.setSucceededListener(this);
+		bodyContent.addComponent(m3uFileUplaoder);
 
 		// m3u editor
 		m3uEditor = new M3uEditor("edit here ...");
 		m3uEditor.setActionLister(this);
 		bodyContent.addComponent(m3uEditor);
 
-		// file uploader
-		m3uFileUplaoder = new M3uFileUplaoder("Upload file here");
-		m3uFileUplaoder.setSucceededListener(this);
-		bodyContent.addComponent(m3uFileUplaoder);
-
-		// account infos:
-		// accountInfosPanel = new AcountInfoPanel();
-		// accountValidationPanel = new AcountValidationPanel();
-
-		// AbstractOrderedLayout blocAccount = createHBloc(accountInfosPanel,
-		// accountValidationPanel);
-
-		// bodyContent.addComponent(blocAccount);
-		// accountValidationPanel.setActionLister(this, validationRejection);
-
-		// prepare docs
-		documentsContent = new GridLayout();
-		documentsContent.setColumns(4);
-		documentsContent.setSizeFull();
-		documentsContent.setSpacing(true);
-		// documentsContent.setHideEmptyRowsAndColumns(true);
-		bodyContent.addComponent(documentsContent);
+		// Result
+		resultTextArea = new TextArea();
+		resultTextArea.setSizeFull();
+		//		resultTextArea.setEnabled(false);
+		Panel resultPannel = new Panel("Result ...");
+		resultPannel.setContent(resultTextArea);
+		bodyContent.addComponent(resultPannel);
 
 		body.setContent(bodyContent);
 	}
@@ -129,41 +109,64 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 		}
 		return content;
 	}
+
+	@Override
+	public void uploadSucceeded(SucceededEvent event) {
+		byte[] buffer = this.m3uFileUplaoder.getOutputStream().toByteArray();
+		//				boolean isPlainText = MimeTypes.PLAIN_TEXT.equals(new MimeTypes().getMimeType(buffer).getName());
+		//		if (isPlainText) {
+
+		String value = "";
+
+		try {
+			value = IOUtils.toString(new ByteArrayInputStream(buffer), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			Notification.show("Failed", Type.TRAY_NOTIFICATION);
+			return;
+		}
+		this.m3uEditor.setValue(value);
+		Notification.show("Success", Type.TRAY_NOTIFICATION);
+	}
+
 	// --------------------------------------- actions ----------------------------------------------
 
 	@Override
 	public void buttonClick(ClickEvent event) {
 
-		// if (event.getButton().getId().equals("FIND")) {
-		// this.currentCriteria = acountSearchBox.getValue();
-		// findAction();
-		// return;
-		// }
-		// if (event.getButton().getId().startsWith("OK_")) {
-		// validateDocument(getDocumentType(event.getButton().getId()));
-		// findAction();
-		// return;
-		// }
-		// if (event.getButton().getId().startsWith("KO_")) {
-		// invalidateDocument(getDocumentType(event.getButton().getId()));
-		// findAction();
-		// return;
-		// }
-		// if (event.getButton().getId().equals("ACC_OK")) {
-		// validateAccount();
-		// findAction();
-		// return;
-		// }
-		// if (event.getButton().getId().equals("ACC_KO")) {
-		// invalidateAccount();
-		// findAction();
-		// return;
-		// }
-		// if (event.getButton().getId().startsWith("LAST_ACCOUNT_")) {
-		// this.account = ((Account) event.getButton().getData());
-		// findAction(false);
-		// return;
-		// }
+		if (event.getButton().getId().equals("PROCESS")) {
+			process();
+			return;
+		}
+		//		if (event.getButton().getId().startsWith("OK_")) {
+		//			validateDocument(getDocumentType(event.getButton().getId()));
+		//			findAction();
+		//			return;
+		//		}
+		//		if (event.getButton().getId().startsWith("KO_")) {
+		//			invalidateDocument(getDocumentType(event.getButton().getId()));
+		//			findAction();
+		//			return;
+		//		}
+		//		if (event.getButton().getId().equals("ACC_OK")) {
+		//			validateAccount();
+		//			findAction();
+		//			return;
+		//		}
+		//		if (event.getButton().getId().equals("ACC_KO")) {
+		//			invalidateAccount();
+		//			findAction();
+		//			return;
+		//		}
+		//		if (event.getButton().getId().startsWith("LAST_ACCOUNT_")) {
+		//			this.account = ((Account) event.getButton().getData());
+		//			findAction(false);
+		//			return;
+		//		}
+	}
+
+	private void process() {
+		resultTextArea.setValue(m3uEditor.getValue());
+
 	}
 
 	// private void validateDocument(DocumentType documentType) {
@@ -228,23 +231,5 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 	// return DocumentType.getEnum(buttonId.substring(buttonId.indexOf("_") +
 	// 1));
 	// }
-
-	@Override
-	public void uploadSucceeded(SucceededEvent event) {
-		byte[] buffer = this.m3uFileUplaoder.getOutputStream().toByteArray();
-		//				boolean isPlainText = MimeTypes.PLAIN_TEXT.equals(new MimeTypes().getMimeType(buffer).getName());
-		//		if (isPlainText) {
-
-		String value = "";
-
-		try {
-			value = IOUtils.toString(new ByteArrayInputStream(buffer), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			Notification.show("Failed", Type.TRAY_NOTIFICATION);
-			return;
-		}
-		this.m3uEditor.setValue(value);
-		Notification.show("Success", Type.TRAY_NOTIFICATION);
-	}
 
 }

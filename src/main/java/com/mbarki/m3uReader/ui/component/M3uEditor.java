@@ -2,12 +2,12 @@ package com.mbarki.m3uReader.ui.component;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 
@@ -15,15 +15,15 @@ public class M3uEditor extends Panel {
 
 	private static final long serialVersionUID = -4145175088751301733L;
 
-	HorizontalLayout content;
-
 	TextArea editorTextArea;
 	Button processButton;
+	HorizontalLayout content;
 
 	@Autowired
 	UiUtils uiUtils;
 
 	public M3uEditor(String editorCaption) {
+		this.setCaption("Edit here");
 
 		editorTextArea = new TextArea();
 		editorTextArea.setPlaceholder(editorCaption);
@@ -38,7 +38,7 @@ public class M3uEditor extends Panel {
 		content.setComponentAlignment(processButton, Alignment.BOTTOM_RIGHT);
 		content.setExpandRatio(editorTextArea, 2);
 		content.setSizeFull();
-
+		this.setContent(content);
 	}
 
 	public String getValue() {
@@ -52,10 +52,10 @@ public class M3uEditor extends Panel {
 	public void setActionLister(ClickListener clickListener) {
 		processButton.addClickListener(clickListener);
 	}
-	
+
 	public AbstractOrderedLayout createHBloc(Component... components) {
 		HorizontalLayout content = new HorizontalLayout();
-		content.setMargin(false);
+		content.setMargin(true);
 		content.setSizeFull();
 
 		for (Component component : components) {
