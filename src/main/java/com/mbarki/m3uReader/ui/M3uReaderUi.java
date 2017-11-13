@@ -2,12 +2,20 @@ package com.mbarki.m3uReader.ui;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.iheartradio.m3u8.Encoding;
+import com.iheartradio.m3u8.Format;
+import com.iheartradio.m3u8.ParseException;
+import com.iheartradio.m3u8.PlaylistException;
+import com.iheartradio.m3u8.PlaylistParser;
+import com.iheartradio.m3u8.data.Playlist;
 import com.mbarki.m3uReader.ui.component.Header;
 import com.mbarki.m3uReader.ui.component.M3uEditor;
 import com.mbarki.m3uReader.ui.component.M3uFileUplaoder;
@@ -185,8 +193,17 @@ public class M3uReaderUi extends UI implements ClickListener, SucceededListener 
 	}
 
 	private void process() {
-		resultTextArea.setValue(m3uEditor.getValue());
-
+		/*	resultTextArea.setValue("Processing ...");
+			InputStream is = new StringBufferInputStream(m3uEditor.getValue());
+			PlaylistParser parser = new PlaylistParser(is, Format.EXT_M3U, Encoding.UTF_8);
+			try {
+				Playlist Playlist = parser.parse();
+			} catch (IOException | ParseException | PlaylistException e) {
+				Notification.show("Failed", Type.TRAY_NOTIFICATION);
+			}
+			Notification.show("Success", Type.TRAY_NOTIFICATION);
+			
+			*/
 	}
 
 	// private void validateDocument(DocumentType documentType) {
