@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.mbarki.m3uReader.model.Channel;
+import com.mbarki.m3uReader.model.ChannelM3u;
 import com.mbarki.m3uReader.model.M3uConsts;
 
 @Component
@@ -13,7 +13,7 @@ public class M3uParser {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(M3uParser.class);
 
-	public Channel parseChannelDescription(String channelLine) {
+	public ChannelM3u parseChannelDescription(String channelLine) {
 		// empty channel line
 		if (Strings.isNullOrEmpty(channelLine))
 			return null;
@@ -23,15 +23,15 @@ public class M3uParser {
 			// TODO: replace with exception managing
 			return null;
 
-		Channel channel = new Channel();
-		channel.setTvgId(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_ID));
-		channel.setTvgName(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_NAME));
-		channel.setTvLogo(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_LOGO));
-		channel.setGroupTitle(this.getInformation(channelLine, M3uConsts.CHANNEL_GROUP_TITLE));
+		ChannelM3u channelM3u = new ChannelM3u();
+		channelM3u.setTvgId(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_ID));
+		channelM3u.setTvgName(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_NAME));
+		channelM3u.setTvLogo(this.getInformation(channelLine, M3uConsts.CHANNEL_TVG_LOGO));
+		channelM3u.setGroupTitle(this.getInformation(channelLine, M3uConsts.CHANNEL_GROUP_TITLE));
 
-		channel.setOutputName(this.getOutputName(channelLine));
+		channelM3u.setOutputName(this.getOutputName(channelLine));
 
-		return channel;
+		return channelM3u;
 	}
 
 	// #EXTINF:-1 tvg-ID="TF1.fr" tvg-name="FR: TF1 HD" tvg-logo="http://i.imgur.com/vwYqdHv.png" group-title="Canalsat",FR: TF1 HD

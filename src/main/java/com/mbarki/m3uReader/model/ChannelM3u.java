@@ -1,6 +1,6 @@
 package com.mbarki.m3uReader.model;
 
-public class Channel {
+public class ChannelM3u {
 
 	// #EXTINF:-1 tvg-ID="TF1.fr" tvg-name="FR: TF1 HD" tvg-logo="http://i.imgur.com/vwYqdHv.png" group-title="Canalsat",FR: TF1 HD
 
